@@ -7,14 +7,17 @@ train_Y = 2 * train_X + np.random.randn(*train_X.shape) * 0.33 + 10
 X = tf.placeholder("float")
 Y = tf.placeholder("float")
 
+# 映射到主机(192.168.199.205)上去执行(把变量保存到主机192.168.199.205上)
 with tf.device("/job:ps/task:0"):
     w = tf.Variable(0.0, name="wight")
     b = tf.Variable(0.0, name="reminder")
 
+# 映射到主机(192.168.199.167)上去执行
 with tf.device("/job:worker/task:0"):
     cost_op = tf.square(Y - tf.multiply(X, w) - b)
     train_op = tf.train.GradientDescentOptimizer(0.01).minimize(cost_op)
 
+# 映射到主机(192.168.199.133)上去执行
 with tf.device("/job:worker/task:1"):
     cost_op_2 = tf.square(Y - tf.multiply(X, w) - b)
     train_op_2 = tf.train.GradientDescentOptimizer(0.01).minimize(cost_op_2)
